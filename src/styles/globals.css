@@ -1,27 +1,27 @@
 /* Variables */
 :root {
-  /* Colors */
-  --color-primary: #4f46e5;
-  --color-primary-dark: #4338ca;
-  --color-primary-light: #818cf8;
-  --color-secondary: #e5e7eb;
-  --color-secondary-dark: #d1d5db;
-  --color-success: #10b981;
-  --color-error: #ef4444;
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
+  /* Colors - iOS inspired */
+  --color-primary: #007AFF;
+  --color-primary-dark: #0062CC;
+  --color-primary-light: #47A1FF;
+  --color-secondary: #F2F2F7;
+  --color-secondary-dark: #E5E5EA;
+  --color-success: #34C759;
+  --color-error: #FF3B30;
+  --color-warning: #FF9500;
+  --color-info: #5AC8FA;
   
-  /* Light mode */
-  --color-background: #ffffff;
-  --color-foreground: #111827;
-  --color-muted: #f9fafb;
-  --color-muted-foreground: #6b7280;
-  --color-border: #e5e7eb;
-  --color-input: #f3f4f6;
-  --color-card: #ffffff;
-  --color-card-foreground: #111827;
-  --color-accent: #f3f4f6;
-  --color-accent-foreground: #111827;
+  /* Light mode - iOS inspired */
+  --color-background: #F2F2F7;
+  --color-foreground: #1C1C1E;
+  --color-muted: #F9F9F9;
+  --color-muted-foreground: #8E8E93;
+  --color-border: #E5E5EA;
+  --color-input: #FFFFFF;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #1C1C1E;
+  --color-accent: #F2F2F7;
+  --color-accent-foreground: #1C1C1E;
   
   /* Spacing */
   --space-1: 0.25rem;
@@ -34,38 +34,38 @@
   --space-16: 4rem;
   
   /* Typography */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-               'Helvetica Neue', Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 
+               system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
   
   /* Borders */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
   --radius-full: 9999px;
   
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  /* Shadows - iOS inspired */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 1px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.03), 0 4px 8px rgba(0, 0, 0, 0.02);
   
   /* Transitions */
-  --transition-standard: 0.2s ease;
+  --transition-standard: 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* Dark mode */
-.dark-mode {
-  --color-background: #0f172a;
-  --color-foreground: #f9fafb;
-  --color-muted: #1e293b;
-  --color-muted-foreground: #94a3b8;
-  --color-border: #334155;
-  --color-input: #1e293b;
-  --color-card: #1e293b;
-  --color-card-foreground: #f9fafb;
-  --color-accent: #334155;
-  --color-accent-foreground: #f9fafb;
+/* Dark mode - iOS inspired */
+.dark-mode, :root.dark {
+  --color-background: #111827;
+  --color-foreground: #FFFFFF;
+  --color-muted: #1F2937;
+  --color-muted-foreground: #9CA3AF;
+  --color-border: #374151;
+  --color-input: #1F2937;
+  --color-card: #1F2937;
+  --color-card-foreground: #FFFFFF;
+  --color-accent: #2C2C2E;
+  --color-accent-foreground: #FFFFFF;
 }
 
 /* Base styles */
@@ -550,33 +550,34 @@ p {
 /* Cards */
 .card {
   background-color: var(--color-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  color: var(--color-card-foreground);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
-  transition: transform var(--transition-standard), box-shadow var(--transition-standard), border-color var(--transition-standard);
+  border: none;
+  transition: transform var(--transition-standard), box-shadow var(--transition-standard);
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-lg);
 }
 
 .card-header {
-  padding: var(--space-6);
+  padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--color-border);
 }
 
 .card-title {
   font-size: 1.25rem;
   font-weight: 600;
+  margin-bottom: 0.5rem;
   color: var(--color-card-foreground);
-  margin-bottom: 0;
 }
 
 .card-description {
   color: var(--color-muted-foreground);
-  margin-top: var(--space-2);
+  font-size: 0.875rem;
 }
 
 .card-content {
@@ -585,8 +586,9 @@ p {
 
 .card-footer {
   padding: var(--space-4) var(--space-6);
-  background-color: var(--color-muted);
   border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* Button */
@@ -594,49 +596,52 @@ p {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-full);
   font-weight: 500;
-  border-radius: var(--radius-md);
-  transition: all var(--transition-standard);
   cursor: pointer;
+  transition: all var(--transition-standard);
   border: none;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  box-shadow: none;
+  letter-spacing: -0.01em;
+  color: inherit;
 }
 
 .button-size-sm {
-  padding: 0.4rem 0.75rem;
-  font-size: 0.8125rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+  height: 2rem;
 }
 
 .button-size-md {
-  padding: 0.625rem 1.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  height: 2.5rem;
 }
 
 .button-size-lg {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 1.125rem;
+  height: 3rem;
 }
 
 .button-primary {
   background-color: var(--color-primary);
   color: white;
+  font-weight: 600;
 }
 
 .button-primary:hover {
   background-color: var(--color-primary-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .button-secondary {
-  background-color: var(--color-muted);
+  background-color: var(--color-secondary);
   color: var(--color-foreground);
 }
 
 .button-secondary:hover {
-  background-color: var(--color-secondary);
-  transform: translateY(-1px);
+  background-color: var(--color-secondary-dark);
 }
 
 .button-ghost {
@@ -646,13 +651,49 @@ p {
 }
 
 .button-ghost:hover {
-  background-color: var(--color-muted);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.button:active {
+  transform: translateY(1px);
 }
 
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none !important;
+  pointer-events: none;
+}
+
+.button-success {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.button-success:hover {
+  background-color: color-mix(in srgb, var(--color-success), black 10%);
+}
+
+.button-danger {
+  background-color: var(--color-error);
+  color: white;
+}
+
+.button-danger:hover {
+  background-color: color-mix(in srgb, var(--color-error), black 10%);
+}
+
+/* Dark mode button overrides */
+.dark .button-secondary {
+  background-color: var(--color-accent);
+  color: var(--color-foreground);
+}
+
+.dark .button-secondary:hover {
+  background-color: color-mix(in srgb, var(--color-accent), white 10%);
+}
+
+.dark .button-ghost:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Form Elements */
@@ -666,61 +707,61 @@ p {
 .input {
   display: block;
   width: 100%;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
   line-height: 1.5;
+  color: var(--color-foreground);
   background-color: var(--color-input);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   transition: border-color var(--transition-standard), box-shadow var(--transition-standard);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--color-primary-light);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
 }
 
 /* Radio Button Styles */
 .radio-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-4);
 }
 
 .radio-item {
-  position: relative;
   display: flex;
   align-items: center;
+  position: relative;
   cursor: pointer;
 }
 
 .radio-item input[type="radio"] {
-  height: 1.25rem;
-  width: 1.25rem;
-  position: relative;
-  cursor: pointer;
-  margin-right: 0.75rem;
-  flex-shrink: 0;
   -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
   border: 2px solid var(--color-border);
   border-radius: 50%;
-  background-color: transparent;
+  background-color: var(--color-background);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: border-color var(--transition-standard), background-color var(--transition-standard);
 }
 
 .radio-item input[type="radio"]::before {
   content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  transform: scale(0);
-  transition: transform 0.1s ease-in-out;
   background-color: var(--color-primary);
+  transform: scale(0);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .radio-item input[type="radio"]:checked {
@@ -732,9 +773,7 @@ p {
 }
 
 .radio-item input[type="radio"]:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px var(--color-primary-light);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
 }
 
 .radio-item input[type="radio"]:disabled {
@@ -743,9 +782,9 @@ p {
 }
 
 .radio-item label {
-  font-size: 0.875rem;
+  padding-left: var(--space-3);
   cursor: pointer;
-  width: 100%;
+  font-size: 0.9375rem;
 }
 
 .radio-item input[type="radio"]:disabled + label {
@@ -761,49 +800,48 @@ p {
 }
 
 .tabs-list {
-  display: flex;
-  background-color: var(--color-muted);
-  border-radius: var(--radius-md);
+  display: inline-flex;
   padding: 0.25rem;
-  margin-bottom: var(--space-4);
-  overflow: hidden;
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-full);
+  gap: 0.25rem;
 }
 
 .tabs-trigger {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.625rem 1.25rem;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
+  line-height: 1.5;
   font-weight: 500;
-  border-radius: var(--radius-md);
+  color: var(--color-muted-foreground);
+  background-color: transparent;
+  border-radius: var(--radius-full);
+  border: none;
   transition: all var(--transition-standard);
   cursor: pointer;
-  border: none;
 }
 
 .tabs-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-foreground);
 }
 
-.tabs-trigger.active {
-  background-color: var(--color-primary);
-  color: white;
+.tabs-trigger[data-state="active"] {
+  color: var(--color-foreground);
+  background-color: white;
+  box-shadow: var(--shadow-sm);
 }
 
 .tabs-content {
-  outline: none;
+  margin-top: 1rem;
 }
 
 /* Progress */
 .progress {
   position: relative;
-  overflow: hidden;
   width: 100%;
-  height: 8px;
-  background-color: var(--color-muted);
+  height: 0.5rem;
+  background-color: var(--color-secondary);
   border-radius: var(--radius-full);
+  overflow: hidden;
 }
 
 .progress-indicator {
@@ -811,9 +849,8 @@ p {
   top: 0;
   left: 0;
   height: 100%;
-  transition: width 0.4s ease;
   background-color: var(--color-primary);
-  border-radius: var(--radius-full);
+  transition: width 0.3s ease-in-out;
 }
 
 /* Badge */
@@ -931,4 +968,129 @@ p {
   .lg\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+}
+
+/* iOS-specific feedback styles */
+.feedback-card {
+  border-radius: var(--radius-xl);
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+  border: none;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-standard);
+}
+
+.feedback-correct {
+  background-color: rgba(52, 199, 89, 0.08);
+  border: 1px solid rgba(52, 199, 89, 0.2);
+}
+
+.feedback-incorrect {
+  background-color: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+/* iOS-style badge for option labels */
+.option-badge {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-foreground);
+  background-color: var(--color-secondary);
+}
+
+.option-badge-selected {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.option-badge-correct {
+  background-color: var(--color-success);
+  color: white;
+}
+
+.option-badge-incorrect {
+  background-color: var(--color-error);
+  color: white;
+}
+
+/* Math input specific styles */
+.math-input {
+  font-size: 1.25rem;
+  height: 3.5rem;
+  padding: 0 1rem;
+  text-align: center;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  border-radius: var(--radius-lg);
+}
+
+/* Result screen styles */
+.result-screen {
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-standard);
+}
+
+.result-header {
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.result-content {
+  padding: 1.5rem;
+}
+
+.result-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Math content styles */
+.math-content {
+  position: relative;
+}
+
+.math-content svg,
+.math-content img,
+.math-content .graph {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem 0;
+}
+
+.dark .math-content svg,
+.dark .math-content img,
+.dark .math-content .graph {
+  border: 1px solid var(--color-border);
+}
+
+/* Home page button styling */
+.home-button {
+  max-width: 300px;
+  width: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+.home-buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }

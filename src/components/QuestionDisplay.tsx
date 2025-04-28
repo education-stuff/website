@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle } from '@/components/icons';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from '@/components/ui/input';
@@ -73,15 +73,17 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   const handleSubmitInputAnswer = () => {
     if (!inputAnswer.trim() || showFeedback) return;
     
+    const submittedValue = inputAnswer.trim(); // Use the trimmed value
+    setSelectedAnswer(submittedValue); // Set selectedAnswer with the input value
     setInternalShowFeedback(true);
-    // For input answers, we'd need a different method to check correctness
-    // This is a placeholder assuming we'd compare with question.correct_answer
+
     const isCorrect = question.correct_answer ? 
-      question.correct_answer.some(ans => ans.toLowerCase() === inputAnswer.toLowerCase()) : 
+      question.correct_answer.some(ans => ans.toLowerCase() === submittedValue.toLowerCase()) : 
       false;
     
     if (onAnswer) {
-      onAnswer(question.id, inputAnswer, isCorrect);
+      // Pass the trimmed input value as the answerId
+      onAnswer(question.id, submittedValue, isCorrect); 
     }
   };
 
@@ -93,16 +95,33 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   
   // Function to safely render HTML content, including SVG
   const renderHTML = (htmlContent: string) => {
+    // For math content, add graph wrapper
+    if (question.type?.toLowerCase() === 'math' && hasGraph) {
+      // Use a combination of split and join instead of regex with 's' flag
+      let processedContent = htmlContent;
+      const svgRegex = /<svg[^>]*>[\s\S]*?<\/svg>/g;
+      const imgRegex = /<img[^>]*>/g;
+      
+      processedContent = processedContent.replace(svgRegex, match => {
+        return '<div class="graph">' + match + '</div>';
+      });
+      
+      processedContent = processedContent.replace(imgRegex, match => {
+        return '<div class="graph">' + match + '</div>';
+      });
+      
+      return { __html: processedContent };
+    }
     return { __html: htmlContent };
   };
 
   const renderQuestionContent = () => {
     return (
-      <div className="p-6 border-b border-slate-800/50">
+      <div className="p-6 border-b border-border">
         <div 
           dangerouslySetInnerHTML={renderHTML(question.content)} 
           className={cn(
-            "prose prose-invert max-w-none prose-lg prose-headings:text-slate-100 prose-p:text-slate-300 prose-strong:text-white",
+            "prose prose-slate dark:prose-invert max-w-none prose-lg",
             hasGraph && "math-content"
           )}
         />
@@ -111,25 +130,33 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   };
 
   const renderFeedback = () => {
-    if (!showFeedback || !selectedAnswer) return null;
+    // Allow feedback if showFeedback is true and either selectedAnswer (MCQ) 
+    // or inputAnswer (input) is present.
+    if (!showFeedback || (!selectedAnswer && !inputAnswer)) return null; 
 
-    const isCorrect = isCorrectAnswer(selectedAnswer);
+    // Determine correctness based on selectedAnswer (MCQ) or inputAnswer (input)
+    const answerToCheck = question.options && question.options.length > 0 ? selectedAnswer : inputAnswer;
+    if (!answerToCheck) return null; // Should not happen if the above check passes, but good for safety
+
+    const isCorrect = question.correct_answer ? 
+      question.correct_answer.some(ans => ans.toLowerCase() === answerToCheck.toLowerCase()) : 
+      false;
     
     return (
       <div className={cn(
-        "mt-6 p-6 rounded-lg border",
-        isCorrect ? "border-emerald-600 bg-emerald-950/20" : "border-rose-600 bg-rose-950/20"
+        "feedback-card",
+        isCorrect ? "feedback-correct" : "feedback-incorrect"
       )}>
         <div className="flex items-center gap-3 mb-4">
           {isCorrect ? (
             <>
-              <CheckCircle2 size={24} className="text-emerald-500" />
-              <p className="font-medium text-lg text-emerald-500">Correct Answer!</p>
+              <CheckCircle2 size={24} className="text-success" />
+              <p className="font-medium text-lg text-success">Correct Answer!</p>
             </>
           ) : (
             <>
-              <XCircle size={24} className="text-rose-500" />
-              <p className="font-medium text-lg text-rose-500">Incorrect Answer</p>
+              <XCircle size={24} className="text-error" />
+              <p className="font-medium text-lg text-error">Incorrect Answer</p>
             </>
           )}
         </div>
@@ -137,33 +164,35 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
         {question.explanation && (
           <div className="mt-4">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle size={16} className="text-slate-400" />
-              <h4 className="font-medium text-slate-200">Explanation</h4>
+              <AlertCircle size={16} className="text-muted-foreground" />
+              <h4 className="font-medium">Explanation</h4>
             </div>
             <div 
               dangerouslySetInnerHTML={renderHTML(question.explanation)} 
-              className="text-slate-400 prose prose-invert prose-p:text-slate-400 prose-headings:text-slate-300" 
+              className="text-muted-foreground prose prose-slate dark:prose-invert" 
             />
           </div>
         )}
         
         {!isCorrect && question.correct_answer && question.options && (
-          <div className="mt-5 pt-5 border-t border-slate-800/50">
+          <div className="mt-5 pt-5 border-t border-border">
             <div className="flex items-center gap-2 mb-3">
-              <CheckCircle2 size={16} className="text-emerald-500" />
-              <p className="font-medium text-slate-200">Correct Answer:</p>
+              <CheckCircle2 size={16} className="text-success" />
+              <p className="font-medium">Correct Answer:</p>
             </div>
-            {question.options
-              .filter(option => question.correct_answer?.includes(option.id))
-              .map(option => (
-                <div key={option.id} className="p-4 rounded-lg border border-emerald-600/50 bg-emerald-950/10">
-                  <div 
-                    dangerouslySetInnerHTML={renderHTML(option.text)} 
-                    className="text-emerald-400 prose prose-invert" 
-                  />
-                </div>
-              ))
-            }
+            <div className="space-y-3">
+              {question.options
+                .filter(option => question.correct_answer?.includes(option.id))
+                .map(option => (
+                  <div key={option.id} className="p-4 rounded-xl border border-success/20 bg-success/5 shadow-sm">
+                    <div 
+                      dangerouslySetInnerHTML={renderHTML(option.text)} 
+                      className="prose prose-slate dark:prose-invert" 
+                    />
+                  </div>
+                ))
+              }
+            </div>
           </div>
         )}
       </div>
@@ -173,18 +202,24 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   const renderOptions = () => {
     if (!question.options || question.options.length === 0) {
       return (
-        <div className="mt-6 px-6">
+        <div className="mt-6 px-6 pb-6">
+          <label className="block text-sm font-medium mb-2">
+            Your Answer
+          </label>
           <Input 
             type="text" 
-            className="w-full bg-slate-800 border-slate-700 text-slate-100"
-            placeholder="Enter your answer here"
+            className={cn(
+              "math-input",
+              question.type?.toLowerCase() === "math" && "math-input"
+            )}
+            placeholder={question.type?.toLowerCase() === "math" ? "Enter your numerical answer" : "Enter your answer here"}
             value={inputAnswer}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setInputAnswer(e.target.value)}
             disabled={showFeedback}
           />
           {!showFeedback && (
             <Button 
-              className="mt-4 w-full py-6 text-lg font-medium bg-indigo-600 hover:bg-indigo-700" 
+              className="mt-4 w-full py-6 text-lg font-medium" 
               onClick={handleSubmitInputAnswer}
             >
               Submit Answer
@@ -213,15 +248,15 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
               key={option.id}
               htmlFor={option.id}
               className={cn(
-                "relative flex items-start p-5 rounded-lg border transition-all cursor-pointer block w-full",
+                "relative flex items-start p-5 rounded-xl border transition-all cursor-pointer block w-full",
                 showFeedback ? (
-                  isSelected && isCorrect ? "border-emerald-500 bg-emerald-950/20" :
-                  isSelected && !isCorrect ? "border-rose-500 bg-rose-950/20" : 
-                  !isSelected && isCorrect ? "border-emerald-500/50 bg-emerald-950/10" :
-                  "border-slate-700 bg-slate-800/50"
+                  isSelected && isCorrect ? "border-success/30 bg-success/5" :
+                  isSelected && !isCorrect ? "border-error/30 bg-error/5" : 
+                  !isSelected && isCorrect ? "border-success/20 bg-success/5" :
+                  "border-border bg-card"
                 ) : (
-                  isSelected ? "border-indigo-500 bg-indigo-950/20" : 
-                  "border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800"
+                  isSelected ? "border-primary bg-primary/5" : 
+                  "border-border bg-card hover:border-primary/30"
                 )
               )}
             >
@@ -229,30 +264,26 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
                 <div className="flex items-center h-5 mr-4">
                   <RadioGroupItem 
                     value={option.id} 
-                    id={option.id} 
-                    className="border-slate-600"
+                    id={option.id}
                   />
                 </div>
                 <div className="flex flex-1">
                   <div className={cn(
-                    "flex-shrink-0 font-semibold mr-3 mt-0.5 w-6 h-6 flex items-center justify-center rounded-full text-sm",
+                    "option-badge",
                     showFeedback ? (
-                      isCorrect ? "bg-emerald-900/50 text-emerald-400" : 
-                      isSelected ? "bg-rose-900/50 text-rose-400" : 
-                      "bg-slate-800 text-slate-400"
+                      isCorrect ? "option-badge-correct" : 
+                      isSelected ? "option-badge-incorrect" : 
+                      ""
                     ) : (
-                      isSelected ? "bg-indigo-900/50 text-indigo-400" : "bg-slate-800 text-slate-400"
+                      isSelected ? "option-badge-selected" : 
+                      ""
                     )
                   )}>
                     {optionLabel}
                   </div>
-                  <div className="font-medium text-slate-100 flex-grow w-full">
-                    <div 
-                      dangerouslySetInnerHTML={renderHTML(option.text)} 
-                      className={cn(
-                        "answer-text prose prose-invert max-w-none prose-p:text-slate-300",
-                        hasGraph && "math-content"
-                      )}
+                  <div className="ml-3 flex-1">
+                    <div
+                      dangerouslySetInnerHTML={renderHTML(option.text)}
                     />
                   </div>
                 </div>
@@ -265,65 +296,10 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   };
 
   return (
-    <div className="w-full">
-      <style jsx global>{`
-        .math-content svg, 
-        .math-content img, 
-        .math-content .graph,
-        .math-content .coordinate {
-          background-color: white;
-          padding: 12px;
-          border-radius: 8px;
-          margin: 12px 0;
-          display: block;
-        }
-        
-        .math-content svg * {
-          color: black;
-          stroke: currentColor;
-        }
-        
-        /* Fix for making labels fully clickable */
-        .radio-group label {
-          position: relative;
-          z-index: 1;
-        }
-        
-        .radio-item {
-          position: relative;
-        }
-        
-        .radio-item input[type="radio"] {
-          position: absolute;
-          opacity: 0;
-          width: 1px;
-          height: 1px;
-        }
-        
-        /* Add the radio button style */
-        .radio-item::before {
-          content: "";
-          display: inline-block;
-          width: 1rem;
-          height: 1rem;
-          border-radius: 50%;
-          border: 2px solid #64748b;
-          margin-right: 0.5rem;
-        }
-        
-        /* Style for checked radio button */
-        .radio-item input[type="radio"]:checked + label::before {
-          border-color: var(--color-primary);
-          background-color: var(--color-primary);
-        }
-      `}</style>
+    <div className="result-screen">
       {renderQuestionContent()}
       {renderOptions()}
-      {showFeedback && (
-        <div className="px-6 pb-6">
-          {renderFeedback()}
-        </div>
-      )}
+      {renderFeedback()}
     </div>
   );
 };

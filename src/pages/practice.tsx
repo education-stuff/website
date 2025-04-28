@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import QuestionDisplay from "@/components/QuestionDisplay";
-import { ChevronLeft, ChevronRight, Home, BookOpen, Clock } from 'lucide-react';
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight, Home, BookOpen, Clock } from '@/components/icons';
 
 // Interface for RW question answer options
 interface AnswerOption {
@@ -56,6 +57,10 @@ const PracticePage: React.FC = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
+      setShowFeedback(false);
+      setSelectedAnswers({});
+      setCurrentQuestionIndex(0);
+      resetTimer();
       try {
         const response = await fetch(`http://localhost:8000/questions/${activeTab}`);
         const data: QuestionsResponse = await response.json();
@@ -69,10 +74,8 @@ const PracticePage: React.FC = () => {
     };
 
     fetchQuestions();
-    resetTimer();
   }, [activeTab]);
 
-  // Timer functionality
   useEffect(() => {
     if (timerActive) {
       timerRef.current = setInterval(() => {
@@ -88,6 +91,7 @@ const PracticePage: React.FC = () => {
   }, [timerActive]);
 
   const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
     setTimer(0);
     setTimerActive(true);
   };
@@ -108,20 +112,14 @@ const PracticePage: React.FC = () => {
   };
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setCurrentQuestionIndex(0);
-    setSelectedAnswers({});
-    setShowFeedback(false);
     router.push(`/practice?type=${value}`, undefined, { shallow: true });
-    resetTimer();
   };
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setShowFeedback(false); // Reset feedback when changing questions
-      setTimerActive(true);
-      // Scroll to top of question
+      setShowFeedback(false);
+      resetTimer();
       if (questionRef.current) {
         questionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -131,9 +129,8 @@ const PracticePage: React.FC = () => {
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
-      setShowFeedback(false); // Reset feedback when changing questions
-      setTimerActive(true);
-      // Scroll to top of question
+      setShowFeedback(false);
+      resetTimer();
       if (questionRef.current) {
         questionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
@@ -165,51 +162,45 @@ const PracticePage: React.FC = () => {
   const correctCount = Object.values(selectedAnswers).filter(a => a.isCorrect).length;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-200">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Head>
         <title>{`SAT Practice - ${activeTab === "rw" ? "Reading & Writing" : "Math"}`}</title>
       </Head>
       
-      <header className="bg-slate-800 sticky top-0 z-10 border-b border-slate-700">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+      <header className="sticky top-0 z-10 backdrop-blur-md bg-card/90 dark:bg-card/90 border-b border-border">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="bg-indigo-600 p-2 rounded-md">
-              <BookOpen size={20} className="text-white" />
-            </div>
-            <h1 className="text-xl font-bold text-white">SAT Practice</h1>
+            <span className="text-lg font-semibold">SAT Practice</span>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="bg-slate-700 py-1 px-3 rounded-full text-sm flex items-center gap-2">
-              <Clock size={14} /> 
-              <span>{formatTime(timer)}</span>
+            <div className="bg-muted text-muted-foreground py-1 px-3 rounded-md text-sm font-mono">
+              {formatTime(timer)}
             </div>
             <Button 
               onClick={() => router.push('/')}
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              className="flex items-center gap-2 bg-slate-700 hover:bg-slate-600"
             >
-              <Home size={16} />
-              <span className="hidden sm:inline">Home</span>
+             Home
             </Button>
           </div>
         </div>
       </header>
       
-      <main className="max-w-4xl mx-auto px-4 py-6 pb-12">
+      <main className="flex-grow w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold mb-1 text-white">
-              {activeTab === "rw" ? "Reading & Writing" : "Math"} Questions
+            <h2 className="text-2xl font-semibold mb-1">
+              {activeTab === "rw" ? "Reading & Writing" : "Math"}
             </h2>
-            <div className="text-slate-400 text-sm flex items-center gap-4">
+            <div className="text-muted-foreground flex items-center gap-4 text-sm">
               <span>
                 Question {currentQuestionIndex + 1} of {questions.length}
               </span>
               {answeredCount > 0 && (
-                <span>
-                  Score: <span className="text-indigo-400 font-medium">{correctCount}</span>/{answeredCount}
+                <span className="bg-primary/10 text-primary py-0.5 px-2 rounded-md font-medium">
+                  Score: {correctCount}/{answeredCount}
                 </span>
               )}
             </div>
@@ -220,41 +211,33 @@ const PracticePage: React.FC = () => {
             onValueChange={handleTabChange} 
             className="w-full sm:w-auto"
           >
-            <TabsList className="grid w-full sm:w-[280px] grid-cols-2 bg-slate-800 p-1 rounded-md">
-              <TabsTrigger 
-                value="rw" 
-                className="rounded-md data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
-              >
-                Reading & Writing
-              </TabsTrigger>
-              <TabsTrigger 
-                value="math" 
-                className="rounded-md data-[state=active]:bg-indigo-600 data-[state=active]:text-white"
-              >
-                Math
-              </TabsTrigger>
+            <TabsList className="w-full sm:w-[240px] grid grid-cols-2 bg-muted text-muted-foreground">
+              <TabsTrigger value="rw" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">R & W</TabsTrigger>
+              <TabsTrigger value="math" className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">Math</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
         <div className="mb-4">
-          <Progress value={progressPercentage} className="h-2 bg-slate-800" indicatorClassName="bg-indigo-600" />
+          <Progress value={progressPercentage} className="h-1.5 rounded-full" />
         </div>
         
         {loading ? (
-          <div className="flex flex-col justify-center items-center h-60 bg-slate-800 rounded-lg border border-slate-700">
-            <div className="w-10 h-10 rounded-full border-4 border-indigo-600 border-t-transparent animate-spin mb-4"></div>
-            <div className="text-slate-400">Loading questions...</div>
-          </div>
+          <Card className="flex flex-col justify-center items-center h-80">
+            <CardContent className="flex flex-col items-center justify-center pt-6">
+              <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+              <p className="text-muted-foreground font-medium">Loading questions...</p>
+            </CardContent>
+          </Card>
         ) : !currentQuestion ? (
-          <div className="flex justify-center items-center h-60 bg-slate-800 rounded-lg border border-slate-700">
-            <div className="text-slate-400 text-center p-6">
-              <div className="mb-2 text-lg">No questions available</div>
-              <p>Please check your connection to localhost:8000</p>
-            </div>
-          </div>
+           <Card className="flex flex-col justify-center items-center h-80">
+            <CardContent className="text-center pt-6">
+              <p className="text-lg font-semibold mb-2">No questions available</p>
+              <p className="text-muted-foreground">Could not load questions for {activeTab}. Please check the backend connection.</p>
+            </CardContent>
+          </Card>
         ) : (
-          <div ref={questionRef} className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+          <Card ref={questionRef} className="overflow-hidden shadow-sm">
             <QuestionDisplay 
               question={{
                 id: currentQuestion.questionId,
@@ -273,38 +256,37 @@ const PracticePage: React.FC = () => {
               resetFeedback={() => setShowFeedback(false)}
             />
             
-            <div className="flex justify-between p-4 bg-slate-800 border-t border-slate-700">
+            <CardFooter className="flex justify-between p-4 bg-muted/50 border-t border-border">
               <Button 
                 onClick={handlePrevQuestion}
                 disabled={currentQuestionIndex === 0}
                 variant="secondary"
-                className="bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center gap-1"
+                size="md"
               >
-                <ChevronLeft size={18} />
                 Previous
               </Button>
               
               <div className="flex gap-2">
-                {currentQuestionIndex < questions.length - 1 && (
+                {currentQuestionIndex < questions.length - 1 ? (
                   <Button 
                     onClick={handleNextQuestion}
-                    className="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-1"
+                    variant="primary"
+                    size="md"
                   >
                     Next Question
-                    <ChevronRight size={18} />
                   </Button>
-                )}
-                {currentQuestionIndex === questions.length - 1 && (
+                ) : (
                   <Button 
                     onClick={() => router.push('/')}
-                    className="bg-green-600 hover:bg-green-700"
+                    variant="success"
+                    size="md"
                   >
-                    Finish
+                    Finish Practice
                   </Button>
                 )}
               </div>
-            </div>
-          </div>
+            </CardFooter>
+          </Card>
         )}
       </main>
     </div>

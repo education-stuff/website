@@ -12,8 +12,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   React.useEffect(() => {
     // Apply dark mode class to html element
     if (darkMode) {
+      document.documentElement.classList.add('dark');
       document.documentElement.classList.add('dark-mode');
     } else {
+      document.documentElement.classList.remove('dark');
       document.documentElement.classList.remove('dark-mode');
     }
   }, [darkMode]);
@@ -23,4 +25,4 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       {children}
     </React.Fragment>
   )
-} 
+}

@@ -1,6 +1,6 @@
 /**
- * Combines multiple class names into a single string
+ * Simple utility to conditionally join classNames together
  */
-export function cn(...inputs: (string | undefined | null | false)[]): string {
-  return inputs.filter(Boolean).join(' ');
+export function cn(...classes: (string | boolean | undefined | null)[]): string {
+  return classes.filter(Boolean).join(' ');
 } 

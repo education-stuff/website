@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
+import { cn } from "@/lib/utils"
 
 interface RadioGroupContextValue {
   value: string;
   onValueChange: (value: string) => void;
-  name?: string;
+  name: string;
 }
 
 const RadioGroupContext = React.createContext<RadioGroupContextValue | undefined>(undefined);
@@ -13,64 +14,66 @@ const RadioGroupContext = React.createContext<RadioGroupContextValue | undefined
 function useRadioGroupContext() {
   const context = React.useContext(RadioGroupContext);
   if (!context) {
-    throw new Error("RadioGroup components must be used within a RadioGroup");
+    throw new Error("RadioGroupItem must be used within a RadioGroup");
   }
   return context;
 }
 
-export interface RadioGroupProps {
+interface RadioGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string;
   onValueChange: (value: string) => void;
   name?: string;
-  className?: string;
-  children: React.ReactNode;
   disabled?: boolean;
+  children: React.ReactNode;
 }
 
-const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
-  ({ className = "", value, onValueChange, name, children, disabled, ...props }, ref) => {
-    // Generate a unique name if one is not provided
-    const uniqueName = React.useMemo(() => name || `radio-group-${Math.random().toString(36).substr(2, 9)}`, [name]);
-    
-    return (
-      <RadioGroupContext.Provider value={{ value, onValueChange, name: uniqueName }}>
-        <div ref={ref} className={`radio-group ${className}`} {...props}>
-          {children}
-        </div>
-      </RadioGroupContext.Provider>
-    );
-  }
-);
-RadioGroup.displayName = "RadioGroup";
+const RadioGroup: React.FC<RadioGroupProps> = ({
+  className,
+  value,
+  onValueChange,
+  name,
+  disabled = false,
+  children,
+  ...props
+}) => {
+  const uniqueName = React.useMemo(() => name || `radio-group-${Math.random().toString(36).slice(2, 9)}`, [name]);
+  
+  return (
+    <RadioGroupContext.Provider value={{ value, onValueChange, name: uniqueName }}>
+      <div 
+        className={cn("radio-group", className)} 
+        role="radiogroup" 
+        {...props}
+      >
+        {children}
+      </div>
+    </RadioGroupContext.Provider>
+  );
+};
 
-export interface RadioGroupItemProps {
+interface RadioGroupItemProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   value: string;
   id?: string;
-  className?: string;
-  children?: React.ReactNode;
-  disabled?: boolean;
 }
 
 const RadioGroupItem = React.forwardRef<HTMLInputElement, RadioGroupItemProps>(
-  ({ className = "", value, id, children, disabled, ...props }, ref) => {
+  ({ className, value, id, disabled, ...props }, ref) => {
     const { value: groupValue, onValueChange, name } = useRadioGroupContext();
     const itemId = id || `radio-${value}`;
     
     return (
-      <div className={`radio-item ${className}`}>
-        <input 
-          type="radio"
-          id={itemId}
-          ref={ref}
-          name={name}
-          value={value}
-          checked={value === groupValue}
-          onChange={() => onValueChange(value)}
-          disabled={disabled}
-          {...props}
-        />
-        {children && <label htmlFor={itemId}>{children}</label>}
-      </div>
+      <input
+        type="radio"
+        ref={ref}
+        id={itemId}
+        name={name}
+        value={value}
+        checked={value === groupValue}
+        onChange={() => onValueChange(value)}
+        disabled={disabled}
+        className={cn("radio-item-input", className)}
+        {...props}
+      />
     );
   }
 );

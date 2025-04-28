@@ -1,4 +1,5 @@
-import * as React from "react";
+import * as React from "react"
+import { cn } from "@/lib/utils"
 
 interface TabsContextValue {
   value: string;
@@ -30,7 +31,7 @@ const Tabs: React.FC<TabsProps> = ({
 }) => {
   return (
     <TabsContext.Provider value={{ value, onValueChange }}>
-      <div className={`tabs ${className}`}>{children}</div>
+      <div className={cn("tabs", className)}>{children}</div>
     </TabsContext.Provider>
   );
 };
@@ -42,7 +43,7 @@ interface TabsListProps {
 }
 
 const TabsList: React.FC<TabsListProps> = ({ children, className = "", style }) => {
-  return <div className={`tabs-list ${className}`} style={style}>{children}</div>;
+  return <div className={cn("tabs-list", className)} style={style}>{children}</div>;
 };
 
 interface TabsTriggerProps {
@@ -61,7 +62,12 @@ const TabsTrigger: React.FC<TabsTriggerProps> = ({
 
   return (
     <button
-      className={`tabs-trigger ${isActive ? "active" : ""} ${className}`}
+      className={cn(
+        "tabs-trigger", 
+        isActive && "active",
+        isActive && "[data-state=active]",
+        className
+      )}
       onClick={() => onValueChange(value)}
       type="button"
     >
@@ -86,7 +92,7 @@ const TabsContent: React.FC<TabsContentProps> = ({
 
   if (!isSelected) return null;
 
-  return <div className={`tabs-content ${className}`}>{children}</div>;
+  return <div className={cn("tabs-content", className)}>{children}</div>;
 };
 
 export { Tabs, TabsList, TabsTrigger, TabsContent }; 
