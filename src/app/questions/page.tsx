@@ -75,7 +75,7 @@ export default function QuestionsPage() {
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-8 text-center">Practice Questions</h1>
       
-      <Tabs defaultValue="reading" value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
           <TabsTrigger value="reading">Reading & Writing</TabsTrigger>
           <TabsTrigger value="math">Math</TabsTrigger>

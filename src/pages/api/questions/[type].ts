@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+// Get the API base URL from environment variable, default to localhost if not set
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8000';
+
 interface AnswerOption {
   id: string;
   content: string;
@@ -37,8 +40,8 @@ export default async function handler(
   }
 
   try {
-    // Forward the request to the external API
-    const response = await fetch(`http://localhost:8000/questions/${type}`);
+    // Forward the request to the external API using the environment variable
+    const response = await fetch(`${API_BASE_URL}/questions/${type}`);
     
     if (!response.ok) {
       throw new Error(`Error fetching questions: ${response.statusText}`);

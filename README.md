@@ -24,6 +24,18 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environment Variables
+
+The application uses environment variables to configure the API endpoint. Create a `.env` file in the root directory with the following variables:
+
+```bash
+# API Configuration
+API_BASE_URL=http://localhost:8000          # For server-side API calls
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000  # For client-side API calls
+```
+
+By default, if these variables are not set, the application will use `http://localhost:8000`. To use a different API endpoint, update these values in your `.env` file.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -48,6 +48,9 @@ const PracticePage: React.FC = () => {
   const questionRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Get the API base URL from environment variable, default to localhost if not set
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+
   useEffect(() => {
     if (typeof type === 'string') {
       setActiveTab(type);
@@ -62,7 +65,7 @@ const PracticePage: React.FC = () => {
       setCurrentQuestionIndex(0);
       resetTimer();
       try {
-        const response = await fetch(`http://localhost:8000/questions/${activeTab}`);
+        const response = await fetch(`${API_BASE_URL}/questions/${activeTab}`);
         const data: QuestionsResponse = await response.json();
         setQuestions(data.questions);
       } catch (error) {
@@ -74,7 +77,7 @@ const PracticePage: React.FC = () => {
     };
 
     fetchQuestions();
-  }, [activeTab]);
+  }, [activeTab, API_BASE_URL]);
 
   useEffect(() => {
     if (timerActive) {
